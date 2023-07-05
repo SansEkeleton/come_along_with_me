@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "319205215204",
+    "project_id": "cawm-81f1b",
+    "storage_bucket": "cawm-81f1b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:319205215204:android:e1b1c409f5dc81746555f1",
+        "android_client_info": {
+          "package_name": "com.example.come_along_with_me"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "319205215204-kdqirur152gqa0pjvek4ivto6m9eba0q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBybeihOBye8IYq8QNRuN11-lZRDVcYQyo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "319205215204-kdqirur152gqa0pjvek4ivto6m9eba0q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
