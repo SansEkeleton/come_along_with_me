@@ -1,16 +1,13 @@
-
-
-
-
 import 'package:come_along_with_me/const.dart';
 import 'package:come_along_with_me/widgets/ContainerButtonWidget.dart';
 import 'package:come_along_with_me/widgets/HeaderWidget.dart';
 import 'package:come_along_with_me/widgets/RowTextWidget.dart';
 import 'package:come_along_with_me/widgets/TextFieldContainer.dart';
 import 'package:flutter/material.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 
 class forgotPasswordPage extends StatefulWidget {
-
   const forgotPasswordPage({super.key});
 
   @override
@@ -18,9 +15,7 @@ class forgotPasswordPage extends StatefulWidget {
 }
 
 class _forgotPasswordPageState extends State<forgotPasswordPage> {
-
-
-   TextEditingController _emailcontroller = TextEditingController();
+  TextEditingController _emailcontroller = TextEditingController();
 
   void dispose() {
     _emailcontroller.dispose();
@@ -36,25 +31,49 @@ class _forgotPasswordPageState extends State<forgotPasswordPage> {
           padding: EdgeInsets.symmetric(horizontal: 22, vertical: 32),
           child: Column(
             children: [
-              SizedBox(height: 25,),
-              HeaderWidget(title: "Recuperar contraseña",),
+              SizedBox(
+                height: 25,
+              ),
+              HeaderWidget(
+                title: "Recuperar contraseña",
+              ),
               Divider(thickness: 1),
-              SizedBox(height: 40,),
-              Text("Ingresa tu correo electrónico para recibir el enlace de recuperación de contraseña", style: TextStyle(fontSize: 16, color: Colors.grey),),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 40,
+              ),
+              Text(
+                "Ingresa tu correo electrónico para recibir el enlace de recuperación de contraseña",
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+              SizedBox(
+                height: 20,
+              ),
               TextFieldContainerWidget(
                 controller: _emailcontroller,
                 prefixIcon: Icons.email,
                 keyboardType: TextInputType.emailAddress,
                 hintText: "email",
               ),
-              SizedBox(height: 20,),
-              ContainerButtonWidget(title: "Enviar Email", onTap: (){print("xd");},),
-              SizedBox(height: 20,),
-              RowTextWidget(title1: "Recuerdas la contraseña?", title2: "  Logeate!!", onTap: () {
-                Navigator.pushNamedAndRemoveUntil(context, PageConst.loginPage, (route) => false);
-              },),
-              
+              SizedBox(
+                height: 20,
+              ),
+              ContainerButtonWidget(
+                title: "Enviar Email",
+                onTap: () {
+                  print("xd");
+                },
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              RowTextWidget(
+                title1: "Recuerdas la contraseña?",
+                title2: "  Logeate!!",
+                onTap: () {
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, PageConst.loginPage, (route) => false);
+                },
+              ),
             ],
           ),
         ),

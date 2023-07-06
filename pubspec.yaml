@@ -26,6 +26,7 @@ dependencies:
   percent_indicator: ^4.2.3
   google_sign_in: ^6.1.4
   firebase_core: ^2.14.0
+  mailer: ^6.0.1
 
 dev_dependencies:
   flutter_test:
