@@ -29,33 +29,28 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
   @override
 Future<void> getCreateCurrentUser(UserEntity user) async {
-    final userCollection = fireStore.collection("users");
-    final uid =  await getCurrentUserId();
-    
-    userCollection.doc(uid).get().then((userDoc) {
+  final userCollection = fireStore.collection("users");
+  final uid = await getCurrentUserId();
 
-      final newUser = UserModel(
-      uid: uid,
-      name: user.name,
-      email: user.email,
-      profileUrl: user.profileUrl,
-      status: user.status,
-      phone: user.phone,
-      password: user.password,
-      isOnline: user.isOnline,
-    ).toDocument();
-      if (!userDoc.exists) {
-        userCollection.doc(uid).set(newUser);
-      }
-      return;
+  final userDoc = await userCollection.doc(uid).get();
+  final newUser = UserModel(
+    uid: uid,
+    name: user.name,
+    email: user.email,
+    profileUrl: user.profileUrl,
+    status: user.status,
+    phone: user.phone,
+    password: user.password,
+    isOnline: user.isOnline,
+  ).toDocument();
 
-
-    } );
-
+  if (!userDoc.exists) {
+    await userCollection.doc(uid).set(newUser);
   }
+}
 
   @override
-Future<String> getCurrentUserId() async => auth.currentUser!.uid;
+  Future<String> getCurrentUserId() async => auth.currentUser!.uid;
  
   @override
   Future<void> getUpdateUser(UserEntity user) {
@@ -70,13 +65,11 @@ Future<String> getCurrentUserId() async => auth.currentUser!.uid;
   }
 
   @override
-  Future<bool> isSignIn() async {
-    final user = auth.currentUser;
-    return user != null;
-  }
+    Future<bool> isSignIn() async => auth.currentUser != null;
+
 
   @override
-Future<void> signIn(UserEntity user) async {
+ Future<void> signIn(UserEntity user) async {
     final email = user.email;
     final password = user.password;
 
@@ -86,9 +79,8 @@ Future<void> signIn(UserEntity user) async {
   }
 
   @override
-  Future<void> signOut() async {
-    await auth.signOut();
-  }
+   Future<void> signOut() async => await auth.signOut();
+
 
   @override
   Future<void> signUp(UserEntity user) async {
