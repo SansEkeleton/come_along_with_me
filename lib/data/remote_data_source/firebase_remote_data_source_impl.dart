@@ -41,6 +41,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
       ).toDocument();
 
       if (!userDoc.exists) {
+        // Save the user document to Firestore
         await userCollection.doc(uid).set(newUser);
       }
     } catch (e) {

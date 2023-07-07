@@ -4,8 +4,6 @@ import 'package:come_along_with_me/widgets/HeaderWidget.dart';
 import 'package:come_along_with_me/widgets/RowTextWidget.dart';
 import 'package:come_along_with_me/widgets/TextFieldContainer.dart';
 import 'package:flutter/material.dart';
-import 'package:mailer/mailer.dart';
-import 'package:mailer/smtp_server.dart';
 
 class forgotPasswordPage extends StatefulWidget {
   const forgotPasswordPage({super.key});

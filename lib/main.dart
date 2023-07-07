@@ -6,6 +6,8 @@ import 'package:come_along_with_me/cubit/credential/cubit/credential_cubit.dart'
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'injection_container.dart' as di;
 
@@ -13,6 +15,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await di.init();
+  final FirebaseFirestore fireStore = FirebaseFirestore.instance;
 
   runApp(const Myapp());
 }
@@ -40,10 +43,9 @@ class Myapp extends StatelessWidget {
                 builder: (context, authState) {
                   if (authState is AuthenticatedState) {
                     return HomePage(uid: authState.uid);
-                  }else{
+                  } else {
                     return const LoginPage();
                   }
-                  
                 },
               );
             },
