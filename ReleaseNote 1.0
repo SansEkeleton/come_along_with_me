@@ -1,0 +1,27 @@
+# CAWM
+
+CAWM es una aplicacion hecha para las familias la cual permite comunicarse y al mismo tiempo localizar o tener en cuenta donde es el destino inicial y final de unos de los integrantes 
+del grupo, esto va permitir tanto ver la ruta,live location y permitir chat.
+
+Notas:
+
+* Desarrollo de la aplicación
+* Instalación
+* git clone 
+* cd ../path/to/the/file
+* expo install
+* expo start
+
+Patch Note 1.0
+-Creacion de Login y registro funcionales
+-Implementacion de firebase(BD)
+-Correcion de errores con el frontend
+-Implementacion de pagina inicial al entrar con usuario
+
+
+Patch Note 2.0:
+-Soon.......
+
+Contacto: N/A
+
+![AngryMadeline2](https://user-images.githubusercontent.com/65257215/183744379-e1ee0991-f5bd-4e5f-ad90-479ab0ef3929.jpg)
