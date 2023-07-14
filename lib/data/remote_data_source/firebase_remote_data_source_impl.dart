@@ -4,6 +4,8 @@ import 'package:come_along_with_me/data/user_model.dart';
 import 'package:come_along_with_me/domain/entities/user_entity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/material.dart';
 
 class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   final FirebaseFirestore fireStore;
@@ -15,6 +17,8 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
     required this.auth,
     required this.googleSignIn,
   });
+
+  get context => null;
 
   @override
   Future<void> forgotPassword(String email) async {
@@ -64,9 +68,31 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   }
 
   @override
-  Future<void> getUpdateUser(UserEntity user) {
+  Future<void> getUpdateUser(UserEntity user) async {
     // TODO: implement getUpdateUser
-    throw UnimplementedError();
+    Map<String, dynamic> userInformation = Map();
+    final userCollection = fireStore.collection("Users");
+
+    if (user.profileUrl != null && user.profileUrl != " ") {
+      userInformation['profileUrl'] = user.profileUrl;
+    }
+
+    if (user.name != null && user.name != " ") {
+      userInformation['name'] = user.name;
+    }
+    if (user.status != null && user.status != " ") {
+      userInformation['status'] = user.status;
+    }
+    userCollection.doc(user.uid).update(userInformation);
+  }
+
+  @override
+  Stream<List<UserEntity>> getAllUsers() {
+    final userCollection = fireStore.collection("Users");
+    return userCollection.snapshots().map((querySnapshot) =>
+        querySnapshot.docs.map((e) => UserModel.fromSnapshot(e)).toList());
+
+    // throw UnimplementedError();
   }
 
   @override
@@ -87,7 +113,47 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
     final password = user.password;
 
     if (email != null && password != null) {
-      await auth.signInWithEmailAndPassword(email: email, password: password);
+      try {
+        await auth.signInWithEmailAndPassword(email: email, password: password);
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'wrong-password') {
+          Fluttertoast.showToast(
+            msg: 'Wrong password',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+          );
+        } else if (e.code == 'user-not-found') {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Incorrect email'),
+                content: Text('The email address entered is incorrect.'),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
+          Fluttertoast.showToast(
+            msg: 'Sign in failed with error: ${e.code}',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+          );
+        }
+      }
     }
   }
 
@@ -109,17 +175,43 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
         );
       }
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'email-already-in-use') {
-        // Handle the case when the email address is already in use
-        // You can show an error message to the user or perform any other desired action.
-        print('Email address is already in use.');
+      if (e.code == 'wrong-password') {
+        Fluttertoast.showToast(
+          msg: 'Wrong password',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+      } else if (e.code == 'user-not-found') {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Incorrect email'),
+              content: Text('The email address entered is incorrect.'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
       } else {
-        // Handle other FirebaseAuthExceptions
-        print('Sign up failed with error: ${e.code}');
+        Fluttertoast.showToast(
+          msg: 'Sign in failed with error: ${e.code}',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
       }
-    } catch (e) {
-      // Handle other exceptions
-      print('Sign up failed with error: $e');
     }
   }
 }

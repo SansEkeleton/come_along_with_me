@@ -38,28 +38,30 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       body: BlocConsumer<CredentialCubit, CredentialState>(
         listener: (context, credentialState) {
-          if (credentialState is CredentialSucess){
+          if (credentialState is CredentialSucess) {
             BlocProvider.of<AuthCubit>(context).loggedIn();
           }
 
-          if (credentialState is CredentialFailure){
+          if (credentialState is CredentialFailure) {
             print("Invalid credentials");
           }
         },
         builder: (context, credentialState) {
-
-          if (credentialState is CredentialLoading){
+          if (credentialState is CredentialLoading) {
             return CircularProgressIndicator();
           }
 
-          if (CredentialState is CredentialSucess){
-            return BlocBuilder<AuthCubit,AuthState>(builder: (context, authState ) {
-              if(authState is AuthenticatedState){
-                return HomePage(uid: authState.uid,);
-              }else{ return _bodyWidget();}
-            }
-            
-            );
+          if (CredentialState is CredentialSucess) {
+            return BlocBuilder<AuthCubit, AuthState>(
+                builder: (context, authState) {
+              if (authState is AuthenticatedState) {
+                return HomePage(
+                  uid: authState.uid,
+                );
+              } else {
+                return _bodyWidget();
+              }
+            });
           }
           return _bodyWidget();
         },
@@ -82,7 +84,8 @@ class _RegisterPageState extends State<RegisterPage> {
           SizedBox(height: 12),
           Text(
             "Subir foto de perfil",
-            style: TextStyle(fontSize: 16, color: Color.fromRGBO(233, 78, 54, 1)),
+            style:
+                TextStyle(fontSize: 16, color: Color.fromRGBO(233, 78, 54, 1)),
           ),
         ],
       ),
@@ -165,7 +168,9 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _submitSignUp() {
-    if (usernamecontroller.text.isEmpty || emailcontroller.text.isEmpty || passwordcontroller.text.isEmpty) {
+    if (usernamecontroller.text.isEmpty ||
+        emailcontroller.text.isEmpty ||
+        passwordcontroller.text.isEmpty) {
       return;
     }
 
@@ -178,7 +183,6 @@ class _RegisterPageState extends State<RegisterPage> {
         phone: "",
         profileUrl: "",
         status: "",
-    
       ),
     );
   }

@@ -44,7 +44,9 @@ class Myapp extends StatelessWidget {
                   if (authState is AuthenticatedState) {
                     return HomePage(uid: authState.uid);
                   } else {
-                    return const LoginPage();
+                    return const LoginPage(
+                      uid: '',
+                    );
                   }
                 },
               );

@@ -1,9 +1,6 @@
-
-
 import 'package:come_along_with_me/domain/entities/user_entity.dart';
 
-abstract class FirebaseRemoteDataSource{
-
+abstract class FirebaseRemoteDataSource {
   Future<void> signIn(UserEntity user);
   Future<void> signUp(UserEntity user);
   Future<void> signOut();
@@ -13,4 +10,5 @@ abstract class FirebaseRemoteDataSource{
   Future<String> getCurrentUserId();
   Future<void> googleAuth();
   Future<void> forgotPassword(String email);
+  Stream<List<UserEntity>> getAllUsers();
 }
