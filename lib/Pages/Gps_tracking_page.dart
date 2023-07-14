@@ -1,9 +1,9 @@
 import 'dart:async';
+
 import 'package:come_along_with_me/const.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 
 class TrackingPage extends StatefulWidget {
   const TrackingPage({Key? key}) : super(key: key);
@@ -15,37 +15,15 @@ class TrackingPage extends StatefulWidget {
 class _TrackingPageState extends State<TrackingPage> {
   final Completer<GoogleMapController> _controller = Completer();
 
-  static const LatLng sourceLocation = LatLng(37.33500926, -122.03272188);
-  static const LatLng destination = LatLng(37.33429383, 122.06600055);
+  static const LatLng sourceLocation = LatLng(18.4796, -69.8908); // Santo Domingo, Dominican Republic
+  static const LatLng destination = LatLng(18.7357, -70.1627); // Santiago, Dominican Republic
 
   List<LatLng> polylineCoordinates = [];
-  LocationData? currentLocation;
 
-  BitmapDescriptor sourceIcon = BitmapDescriptor.defaultMarker;
-  BitmapDescriptor destinationIcon = BitmapDescriptor.defaultMarker;
-  BitmapDescriptor currentLocationIcon = BitmapDescriptor.defaultMarker;
-
-  Future<void> getCurrentLocation() async {
-    Location location = Location();
-
-    currentLocation = await location.getLocation();
-
-    GoogleMapController googleMapController = await _controller.future;
-    location.onLocationChanged.listen((newLoc) {
-      currentLocation = newLoc;
-      googleMapController.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            zoom: 13.5,
-            target: LatLng(
-              newLoc.latitude!,
-              newLoc.longitude!,
-            ),
-          ),
-        ),
-      );
-      setState(() {});
-    });
+  @override
+  void initState() {
+    super.initState();
+    getPolyPoints();
   }
 
   Future<void> getPolyPoints() async {
@@ -67,29 +45,6 @@ class _TrackingPageState extends State<TrackingPage> {
     }
   }
 
-  Future<void> setCustomMarkerIcon() async {
-    sourceIcon = await BitmapDescriptor.fromAssetImage(
-      ImageConfiguration.empty,
-      "assets/Logo_CAWM.png",
-    );
-    destinationIcon = await BitmapDescriptor.fromAssetImage(
-      ImageConfiguration.empty,
-      "assets/Logo_CAWM.png",
-    );
-    currentLocationIcon = await BitmapDescriptor.fromAssetImage(
-      ImageConfiguration.empty,
-      "assets/Logo_CAWM.png",
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    setCustomMarkerIcon();
-    getCurrentLocation();
-    getPolyPoints();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,50 +54,35 @@ class _TrackingPageState extends State<TrackingPage> {
           style: TextStyle(color: Colors.black, fontSize: 16),
         ),
       ),
-      body: currentLocation == null
-          ? const Center(child: Text("Loading"))
-          : Container(
-              child: GoogleMap(
-                initialCameraPosition: CameraPosition(
-                  target: LatLng(
-                    currentLocation!.latitude!,
-                    currentLocation!.longitude!,
-                  ),
-                  zoom: 13.5,
-                ),
-                polylines: {
-                  Polyline(
-                    polylineId: PolylineId("route"),
-                    points: polylineCoordinates,
-                    color: primaryColor,
-                    width: 6,
-                  ),
-                },
-                markers: {
-                  Marker(
-                    markerId: const MarkerId("currentLocation"),
-                    icon: currentLocationIcon,
-                    position: LatLng(
-                      currentLocation!.latitude!,
-                      currentLocation!.longitude!,
-                    ),
-                  ),
-                  Marker(
-                    markerId: MarkerId("source"),
-                    icon: sourceIcon,
-                    position: sourceLocation,
-                  ),
-                  Marker(
-                    markerId: MarkerId("Destination"),
-                    icon: destinationIcon,
-                    position: destination,
-                  ),
-                },
-                onMapCreated: (mapController) {
-                  _controller.complete(mapController);
-                },
-              ),
+      body: Container(
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(
+            target: sourceLocation,
+            zoom: 7.0,
+          ),
+          polylines: {
+            Polyline(
+              polylineId: PolylineId("route"),
+              points: polylineCoordinates,
+              color: Colors.blue,
+              width: 6,
             ),
+          },
+          markers: {
+            Marker(
+              markerId: const MarkerId("source"),
+              position: sourceLocation,
+            ),
+            Marker(
+              markerId: const MarkerId("destination"),
+              position: destination,
+            ),
+          },
+          onMapCreated: (mapController) {
+            _controller.complete(mapController);
+          },
+        ),
+      ),
     );
   }
 }

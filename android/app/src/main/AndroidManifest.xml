@@ -4,6 +4,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:label="come_along_with_me"
@@ -16,8 +17,8 @@
 
         <!-- Specify your Google Maps API key -->
         <meta-data
-            android:name="com.google.android.geo.AIzaSyBSkNu7lkZaRRBtBJSJhWuVOdHPOEEBTdU"
-            android:value="AIzaSyBSkNu7lkZaRRBtBJSJhWuVOdHPOEEBTdU" />
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyAf64K6Y6mvfal59-vRMuF_MjuWp6aRR-k" />
 
         <!-- Your existing activity configuration -->
         <activity
@@ -48,5 +49,6 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+            
     </application>
 </manifest>
