@@ -79,7 +79,7 @@ class _TrackingPageState extends State<TrackingPage> {
               child: GoogleMap(
                 initialCameraPosition: CameraPosition(
                   target: sourceLocation,
-                  zoom: 7.0,
+                  zoom: 16.0,
                 ),
                 polylines: {
                   Polyline(
@@ -102,6 +102,7 @@ class _TrackingPageState extends State<TrackingPage> {
                 },
                 onMapCreated: (mapController) {
                   _controller.complete(mapController);
+                  mapController.moveCamera(CameraUpdate.newLatLng(sourceLocation));
                 },
               ),
             ),

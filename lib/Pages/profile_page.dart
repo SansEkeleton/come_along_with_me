@@ -23,7 +23,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.all(50),
       child: Column(children: [
         Container(
           height: 62,
