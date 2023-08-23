@@ -1,13 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:come_along_with_me/Pages/home_page.dart';
 import 'package:come_along_with_me/Pages/login_page.dart';
 import 'package:come_along_with_me/Routes/routes.dart';
 import 'package:come_along_with_me/cubit/auth/cubit/auth_cubit.dart';
 import 'package:come_along_with_me/cubit/credential/cubit/credential_cubit.dart';
+import 'package:come_along_with_me/cubit/user/cubit/user_cubit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'injection_container.dart' as di;
 
@@ -29,7 +29,8 @@ class Myapp extends StatelessWidget {
       providers: [
         BlocProvider<AuthCubit>(
             create: (_) => di.sl<AuthCubit>()..appStarted()),
-        BlocProvider<CredentialCubit>(create: (_) => di.sl<CredentialCubit>())
+        BlocProvider<CredentialCubit>(create: (_) => di.sl<CredentialCubit>()),
+        BlocProvider<UserCubit>(create: (_) => di.sl<UserCubit>()..getUsers()),
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
@@ -44,9 +45,7 @@ class Myapp extends StatelessWidget {
                   if (authState is AuthenticatedState) {
                     return HomePage(uid: authState.uid);
                   } else {
-                    return const LoginPage(
-                      uid: '',
-                    );
+                    return  LoginPage(uid: "");
                   }
                 },
               );

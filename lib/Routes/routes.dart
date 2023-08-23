@@ -1,3 +1,4 @@
+import 'package:come_along_with_me/Pages/chat_room_page.dart';
 import 'package:come_along_with_me/Pages/create_new_group_page.dart';
 import 'package:come_along_with_me/Pages/forgot_password.dart';
 import 'package:come_along_with_me/Pages/login_page.dart';
@@ -36,6 +37,10 @@ class Routes {
         {
           return materialBuilder(widget: SingleChatPage());
         }
+      case PageConst.ChatRoom:
+        {
+          return materialBuilder(widget: ChatRoom(chatRoomId: '', userMap: {},));
+        }  
 
       case "/":
         {

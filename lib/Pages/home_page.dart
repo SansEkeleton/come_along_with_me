@@ -2,6 +2,9 @@ import 'package:come_along_with_me/Pages/group_page.dart';
 import 'package:come_along_with_me/Pages/profile_page.dart';
 import 'package:come_along_with_me/Pages/users_page.dart';
 import 'package:come_along_with_me/cubit/auth/cubit/auth_cubit.dart';
+import 'package:come_along_with_me/cubit/user/cubit/user_cubit.dart';
+import 'package:come_along_with_me/data/user_model.dart';
+import 'package:come_along_with_me/domain/entities/user_entity.dart';
 import 'package:come_along_with_me/widgets/TextFieldContainer.dart';
 import 'package:come_along_with_me/widgets/custom_tool_bar_widget.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +19,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+ 
+
+  
   TextEditingController _searchController = TextEditingController();
   PageController _pageViewController = PageController(initialPage: 0);
   bool _isSearch = false;
@@ -25,7 +32,8 @@ class _HomePageState extends State<HomePage> {
     "Log out",
   ];
 
-  List<Widget> get pages => [GroupPage(), UsersPage(), ProfilePage()];
+  List<Widget> get pages =>
+      [GroupPage(), UsersPage(users: [],), ProfilePage(currentUser: UserModel(),)];
   @override
   void dispose() {
     _searchController.dispose();
@@ -103,32 +111,60 @@ class _HomePageState extends State<HomePage> {
                           }).toList()),
                 ],
         ),
-        body: Column(children: [
-          _isSearch == true
-              ? _emptyContainer()
-              : CustomToolBarWidget(
-                  pageIndex: _toolBarPageIndex,
-                  toolBarIndexController: (index) {
-                    print("current page $index");
-                    setState(() {
-                      _toolBarPageIndex = index;
-                    });
-                    _pageViewController.jumpToPage(index);
-                  },
-                ),
-          Expanded(
-            child: PageView.builder(
-                controller: _pageViewController,
-                onPageChanged: (index) {
-                  setState(() {
-                    _toolBarPageIndex = index;
-                  });
-                },
-                itemCount: pages.length,
-                itemBuilder: (context, index) {
-                  return pages[index];
-                }),
-          ),
-        ]));
+        body: BlocBuilder<UserCubit, UserState>(
+          builder: (context, userState) {
+            
+            
+
+            if (userState is UserLoaded){
+
+            final currentUser = userState.users.firstWhere((element) => element.uid == widget.uid, orElse: () => UserModel(),);
+            final users = userState.users.where((element) => element.uid != widget.uid).toList();
+
+              return Column(children: [
+              _isSearch == true
+                  ? _emptyContainer()
+                  : CustomToolBarWidget(
+                      pageIndex: _toolBarPageIndex,
+                      toolBarIndexController: (index) {
+                        print("current page $index");
+                        setState(() {
+                          _toolBarPageIndex = index;
+                        });
+                        _pageViewController.jumpToPage(index);
+                      },
+                    ),
+              Expanded(
+                child: PageView.builder(
+                    controller: _pageViewController,
+                    onPageChanged: (index) {
+                      setState(() {
+                        _toolBarPageIndex = index;
+                      });
+                    },
+                    itemCount: pages.length,
+                    itemBuilder: (context, index) {
+                      return _switchPage(users:users, currentUser: currentUser);
+                    }),
+              ),
+            ]);
+            }
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ));
+  }
+  Widget _switchPage({required List<UserEntity> users, required UserEntity currentUser}){
+    switch(_toolBarPageIndex){
+      case 0:
+        return GroupPage();
+      case 1:
+        return UsersPage(users: users);
+      case 2:
+        return ProfilePage(currentUser: currentUser,);
+      default:
+        return Container();
+    }
   }
 }

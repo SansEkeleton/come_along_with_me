@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'Gps_tracking_page.dart';
 
 class SingleChatPage extends StatefulWidget {
@@ -9,6 +10,7 @@ class SingleChatPage extends StatefulWidget {
 }
 
 class _SingleChatState extends State<SingleChatPage> {
+  
   TextEditingController _messageController = TextEditingController();
 
   @override

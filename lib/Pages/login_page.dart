@@ -89,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
       children: [
         InkWell(
           onTap: () {
-            //GOOGLE LOGIN
+            BlocProvider.of<CredentialCubit>(context).submitGoogleAuth();
           },
           child: Container(
             height: 50,

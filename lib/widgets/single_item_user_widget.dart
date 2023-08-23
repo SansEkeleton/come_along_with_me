@@ -1,9 +1,10 @@
+import 'package:come_along_with_me/domain/entities/user_entity.dart';
 import 'package:flutter/material.dart';
 
 class SingleItemUserWidget extends StatelessWidget {
   final VoidCallback onTap;
-  //userEntity
-  const SingleItemUserWidget({super.key, required this.onTap});
+  final UserEntity profileUser;
+  const SingleItemUserWidget({super.key, required this.onTap, required this.profileUser});
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +30,8 @@ class SingleItemUserWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 10,),
-                      Text("User Name", style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w600),),
-                      Text("recent msg", style: TextStyle(fontSize: 14, color: Colors.black.withOpacity(.7), fontWeight: FontWeight.w600),),
+                      Text("${profileUser.name}", style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w600),),
+                      Text("${profileUser.status}", style: TextStyle(fontSize: 14, color: Colors.black.withOpacity(.7), fontWeight: FontWeight.w600),),
                       SizedBox(height: 10,),
                       Container(margin: EdgeInsets.only(right: 10 ),   child: Divider(thickness: 1.50, color: Colors.black.withOpacity(.3))),
                       

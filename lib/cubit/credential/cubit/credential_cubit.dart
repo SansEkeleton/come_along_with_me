@@ -53,9 +53,9 @@ class CredentialCubit extends Cubit<CredentialState> {
     }
   }
 
-  Future<void> submitGoogleAuth({required UserEntity user}) async {
+  Future<void> submitGoogleAuth() async {
    
-
+  emit(CredentialLoading());
     try{
      await googleAuthUserCase.call();
       emit(CredentialSucess());

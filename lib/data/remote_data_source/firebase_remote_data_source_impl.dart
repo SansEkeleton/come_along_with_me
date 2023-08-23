@@ -3,9 +3,9 @@ import 'package:come_along_with_me/data/remote_data_source/firebase_remote_data_
 import 'package:come_along_with_me/data/user_model.dart';
 import 'package:come_along_with_me/domain/entities/user_entity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   final FirebaseFirestore fireStore;
@@ -45,13 +45,10 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
       ).toDocument();
 
       if (!userDoc.exists) {
-        // Save the user document to Firestore
         await userCollection.doc(uid).set(newUser);
       }
     } catch (e) {
-      // Handle the exception here
       print(e.toString());
-      // You can throw a custom exception or handle the error in another way.
     }
   }
 
@@ -69,9 +66,9 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
   @override
   Future<void> getUpdateUser(UserEntity user) async {
-    // TODO: implement getUpdateUser
-    Map<String, dynamic> userInformation = Map();
-    final userCollection = fireStore.collection("Users");
+ 
+    Map<String,dynamic> userInformation = {};
+    final userCollection = fireStore.collection("users");
 
     if (user.profileUrl != null && user.profileUrl != " ") {
       userInformation['profileUrl'] = user.profileUrl;
@@ -88,18 +85,34 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
   @override
   Stream<List<UserEntity>> getAllUsers() {
-    final userCollection = fireStore.collection("Users");
+    final userCollection = fireStore.collection("users");
     return userCollection.snapshots().map((querySnapshot) =>
         querySnapshot.docs.map((e) => UserModel.fromSnapshot(e)).toList());
 
-    // throw UnimplementedError();
   }
 
   @override
-  Future<void> googleAuth() {
-    // TODO: implement googleAuth
-    throw UnimplementedError();
+  Future<void> googleAuth() async {
+    final GoogleSignInAccount? account = await googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth =
+        await account!.authentication;
+
+final authCredrential =  GoogleAuthProvider.credential(idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
+
+    final userInformation = (await auth.signInWithCredential(authCredrential)).user;
+    getCreateCurrentUser(UserEntity(
+      uid: userInformation!.uid,
+      name: userInformation.displayName,
+      email: userInformation.email,
+      profileUrl: userInformation.photoURL,
+      status: "Hey there, I am using Come Along With Me",
+      phone: userInformation.phoneNumber,
+      isOnline: true,
+    ));
+    
   }
+
+
 
   @override
   Future<bool> isSignIn() async {

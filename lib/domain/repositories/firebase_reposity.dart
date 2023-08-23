@@ -10,4 +10,6 @@ abstract class FirebaseReposity {
   Future<String> getCurrentUserId();
   Future<void> googleAuth();
   Future<void> forgotPassword(String email);
+  Stream<List<UserEntity>> getAllUsers();
+
 }

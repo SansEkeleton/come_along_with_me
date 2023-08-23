@@ -1,9 +1,14 @@
 import 'package:come_along_with_me/widgets/ContainerButtonWidget.dart';
 import 'package:come_along_with_me/widgets/TextFieldContainer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../cubit/user/cubit/user_cubit.dart';
+import '../domain/entities/user_entity.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  final UserEntity currentUser;
+  const ProfilePage({super.key, required this.currentUser});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -15,6 +20,13 @@ class _ProfilePageState extends State<ProfilePage> {
   TextEditingController _emailController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    _nameController.value = TextEditingValue(text: widget.currentUser.name!);
+    _statusController.value = TextEditingValue(text: widget.currentUser.status!);
+  }
+
+  @override
   void dispose() {
     super.dispose();
     _nameController.dispose();
@@ -22,7 +34,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget build(BuildContext context) {
-    return Container(
+    return SingleChildScrollView(
+     child : Container(
       padding: EdgeInsets.all(50),
       child: Column(children: [
         Container(
@@ -76,11 +89,19 @@ class _ProfilePageState extends State<ProfilePage> {
         ContainerButtonWidget(
             title: "Update Profile",
             onTap: () {
-              print("updating profile");
+              _updateUserProfile();
             })
       ]),
-    );
+    ));
   }
 
-  void _updateUserProfile() {}
+  void _updateUserProfile() {
+
+    BlocProvider.of<UserCubit>(context).updateUsers(
+        user: UserEntity(
+          uid: widget.currentUser.uid,
+            name: _nameController.text,
+            email: _emailController.text,
+            status: _statusController.text));
+  }
 }

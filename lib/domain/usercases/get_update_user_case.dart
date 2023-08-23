@@ -11,7 +11,7 @@ class GetUpdateUserCase {
 
   GetUpdateUserCase({required this.repository});
 
-  Future<void> getUpdateUser(UserEntity User)  {
+  Future<void> call(UserEntity User)  {
     return  repository.getUpdateUser(User);
   }
 }

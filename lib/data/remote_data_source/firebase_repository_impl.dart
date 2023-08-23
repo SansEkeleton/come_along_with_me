@@ -51,4 +51,9 @@ class FirebaseReposityImpl implements FirebaseReposity{
   @override
   Future<void> googleAuth() async => remoteDataSource.googleAuth();
   
+  @override
+  
+    Stream<List<UserEntity>> getAllUsers() => remoteDataSource.getAllUsers();
+  
+  
 }
