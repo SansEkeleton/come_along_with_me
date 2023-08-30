@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -74,28 +74,25 @@ class _ChatRoomState extends State<ChatRoom> {
               height: size.height / 1.25,
               width: size.width,
               child: StreamBuilder<QuerySnapshot>(
-                stream: _firestore
-                    .collection('chatroom')
-                    .doc(widget.chatRoomId)
-                    .collection('chats')
-                    .orderBy("time", descending: false)
-                    .snapshots(),
-                 builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasData) {
-                    final messages = snapshot.data!.docs;
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      reverse: false, // Mostrar mensajes en orden descendente
-                      itemCount: messages.length,
-                      itemBuilder: (context, index) {
-                        Map<String, dynamic> map =
-                            messages[index].data() as Map<String, dynamic>;
-                        return _buildMessageWidget(map);
-                      },
-                    );
-                  } else {
-                    return CircularProgressIndicator();
+  stream: _firestore
+      .collection('chatroom')
+      .doc(widget.chatRoomId)
+      .collection('chats')
+      .orderBy("time", descending: false)
+      .snapshots(),
+  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+    if (snapshot.hasData) {
+      final messages = snapshot.data!.docs;
+      final messageWidgets = messages
+          .map((doc) => _buildMessageWidget(doc.data() as Map<String, dynamic>))
+          .toList();
+      return ListView(
+        shrinkWrap: true,
+        reverse: false,
+        children: messageWidgets,
+      );
+    } else {
+      return CircularProgressIndicator();
                   }
                 },
               ),
@@ -142,28 +139,27 @@ class _ChatRoomState extends State<ChatRoom> {
   }
 
   Widget _buildMessageWidget(Map<String, dynamic> map) {
-    final Size size = MediaQuery.of(context).size;
+  final Size size = MediaQuery.of(context).size;
+  final isCurrentUser = map['sendby'] == _auth.currentUser!.displayName;
 
-    return Align(
-      alignment: map['sendby'] == _auth.currentUser!.displayName
-          ? Alignment.centerRight
-          : Alignment.centerLeft,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          color: Colors.blue,
-        ),
-        child: Text(
-          map['message'],
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
-          ),
+  return Align(
+    alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
+    child: Container(
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        color: isCurrentUser ? Colors.blue : Colors.grey, // Cambiar colores según el emisor o el receptor
+      ),
+      child: Text(
+        map['message'],
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: isCurrentUser ? Colors.white : Colors.black, // Cambiar color de texto
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
