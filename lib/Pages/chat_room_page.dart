@@ -1,6 +1,8 @@
- import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'Gps_tracking_page.dart';
 
 class ChatRoom extends StatefulWidget {
   final Map<String, dynamic> userMap;
@@ -74,25 +76,27 @@ class _ChatRoomState extends State<ChatRoom> {
               height: size.height / 1.25,
               width: size.width,
               child: StreamBuilder<QuerySnapshot>(
-  stream: _firestore
-      .collection('chatroom')
-      .doc(widget.chatRoomId)
-      .collection('chats')
-      .orderBy("time", descending: false)
-      .snapshots(),
-  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-    if (snapshot.hasData) {
-      final messages = snapshot.data!.docs;
-      final messageWidgets = messages
-          .map((doc) => _buildMessageWidget(doc.data() as Map<String, dynamic>))
-          .toList();
-      return ListView(
-        shrinkWrap: true,
-        reverse: false,
-        children: messageWidgets,
-      );
-    } else {
-      return CircularProgressIndicator();
+                stream: _firestore
+                    .collection('chatroom')
+                    .doc(widget.chatRoomId)
+                    .collection('chats')
+                    .orderBy("time", descending: false)
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasData) {
+                    final messages = snapshot.data!.docs;
+                    final messageWidgets = messages
+                        .map((doc) => _buildMessageWidget(
+                            doc.data() as Map<String, dynamic>))
+                        .toList();
+                    return ListView(
+                      shrinkWrap: true,
+                      reverse: false,
+                      children: messageWidgets,
+                    );
+                  } else {
+                    return CircularProgressIndicator();
                   }
                 },
               ),
@@ -114,8 +118,18 @@ class _ChatRoomState extends State<ChatRoom> {
                         controller: _message,
                         decoration: InputDecoration(
                           suffixIcon: IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.photo),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TrackingPage(
+                                    onSendLocation:
+                                        (Map<String, dynamic> message) {},
+                                  ),
+                                ),
+                              );
+                            },
+                            icon: Icon(Icons.location_searching),
                           ),
                           hintText: "Send Message",
                           border: OutlineInputBorder(
@@ -139,27 +153,31 @@ class _ChatRoomState extends State<ChatRoom> {
   }
 
   Widget _buildMessageWidget(Map<String, dynamic> map) {
-  final Size size = MediaQuery.of(context).size;
-  final isCurrentUser = map['sendby'] == _auth.currentUser!.displayName;
+    final Size size = MediaQuery.of(context).size;
+    final isCurrentUser = map['sendby'] == _auth.currentUser!.displayName;
 
-  return Align(
-    alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
-    child: Container(
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        color: isCurrentUser ? Colors.blue : Colors.grey, // Cambiar colores según el emisor o el receptor
-      ),
-      child: Text(
-        map['message'],
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: isCurrentUser ? Colors.white : Colors.black, // Cambiar color de texto
+    return Align(
+      alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          color: isCurrentUser
+              ? Colors.blue
+              : Colors.grey, // Cambiar colores según el emisor o el receptor
+        ),
+        child: Text(
+          map['message'],
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: isCurrentUser
+                ? Colors.white
+                : Colors.black, // Cambiar color de texto
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }

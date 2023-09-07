@@ -10,7 +10,6 @@ class SingleChatPage extends StatefulWidget {
 }
 
 class _SingleChatState extends State<SingleChatPage> {
-  
   TextEditingController _messageController = TextEditingController();
 
   @override
@@ -92,7 +91,9 @@ class _SingleChatState extends State<SingleChatPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => TrackingPage(),
+                          builder: (context) => TrackingPage(
+                            onSendLocation: (Map<String, dynamic> message) {},
+                          ),
                         ),
                       );
                     },

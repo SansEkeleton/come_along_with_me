@@ -6,7 +6,10 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class TrackingPage extends StatefulWidget {
-  const TrackingPage({Key? key}) : super(key: key);
+  const TrackingPage(
+      {Key? key,
+      required Null Function(Map<String, dynamic> message) onSendLocation})
+      : super(key: key);
 
   @override
   State<TrackingPage> createState() => _TrackingPageState();
@@ -15,52 +18,56 @@ class TrackingPage extends StatefulWidget {
 class _TrackingPageState extends State<TrackingPage> {
   final Completer<GoogleMapController> _controller = Completer();
 
-  static const LatLng sourceLocation = LatLng(18.4796, -69.8908); // Santo Domingo, Dominican Republic
-  static const LatLng destination = LatLng(19.4517000, -70.6970300); // Santiago, Dominican Republic
+  LatLng? santoDomingoLocation; // Coordenada de Santo Domingo
+  LatLng? santiagoLocation; // Coordenada de Santiago
 
-  List<LatLng> polylineCoordinates = [];
   String locationText = '';
   String distanceText = '';
+  bool showPolyline = false; // Controla si se deben mostrar los polígonos
+  bool isLocationEnabled =
+      false; // Controla si se habilita la obtención de ubicación
 
   @override
   void initState() {
     super.initState();
-    getPolyPoints();
     updateLocationText();
     updateDistanceText();
   }
 
-  Future<void> getPolyPoints() async {
-    PolylinePoints polylinePoints = PolylinePoints();
-
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      google_api_key,
-      PointLatLng(sourceLocation.latitude, sourceLocation.longitude),
-      PointLatLng(destination.latitude, destination.longitude),
-    );
-
-    if (result.points.isNotEmpty) {
-      result.points.forEach(
-        (PointLatLng point) => polylineCoordinates.add(
-          LatLng(point.latitude, point.longitude),
-        ),
-      );
-      setState(() {});
-    }
-  }
-
   void updateLocationText() {
-    // Aquí puedes implementar la lógica para obtener la ubicación actual en tiempo real
-    // y actualizar la variable `locationText` con la ubicación actual.
-    // Por ahora, solo estableceré un valor de ejemplo.
     locationText = 'Ubicación actual: Santo Domingo';
   }
 
   void updateDistanceText() {
-    // Aquí puedes implementar la lógica para calcular la distancia recorrida en tiempo real
-    // y actualizar la variable `distanceText` con la distancia actual.
-    // Por ahora, solo estableceré un valor de ejemplo.
     distanceText = 'Destino Final: Santiago';
+  }
+
+  void onLocationButtonPressed() {
+    if (isLocationEnabled) {
+      // Define las coordenadas de Santo Domingo y Santiago cuando se presiona el botón
+      santoDomingoLocation = LatLng(18.4796, -69.8908);
+      santiagoLocation = LatLng(19.4517000, -70.6970300);
+
+      // Muestra los polígonos
+      setState(() {
+        showPolyline = true;
+      });
+    }
+  }
+
+  void onSendLocationButtonPressed() {
+    // Aquí puedes implementar la lógica para enviar ubicación.
+    // Esto podría involucrar el uso de servicios de ubicación en tiempo real o intercambio de coordenadas.
+  }
+
+  void onReceiveLocationButtonPressed() {
+    // Aquí puedes implementar la lógica para recibir ubicación.
+    // Esto podría involucrar el uso de servicios de ubicación en tiempo real o intercambio de coordenadas.
+
+    // Habilita la obtención de ubicación después de presionar el botón "Recibir Ubicación"
+    setState(() {
+      isLocationEnabled = true;
+    });
   }
 
   @override
@@ -69,7 +76,7 @@ class _TrackingPageState extends State<TrackingPage> {
       appBar: AppBar(
         title: const Text(
           "Tracking",
-          style: TextStyle(color: Colors.black, fontSize: 16),
+          style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
       body: Container(
@@ -78,31 +85,37 @@ class _TrackingPageState extends State<TrackingPage> {
             Expanded(
               child: GoogleMap(
                 initialCameraPosition: CameraPosition(
-                  target: sourceLocation,
-                  zoom: 16.0,
+                  target: santoDomingoLocation ?? LatLng(0, 0),
+                  zoom: 6.0,
                 ),
                 polylines: {
-                  Polyline(
-                    polylineId: PolylineId("route"),
-                    points: polylineCoordinates,
-                    color: Colors.blue,
-                    width: 6,
-                  ),
+                  if (showPolyline)
+                    Polyline(
+                      polylineId: PolylineId("route"), // ID de polilínea
+                      points: [
+                        santoDomingoLocation ?? LatLng(0, 0),
+                        santiagoLocation ?? LatLng(0, 0),
+                      ],
+                      color: Colors.blue,
+                      width: 6,
+                    ),
                 },
                 markers: {
-                  Marker(
-                    markerId: const MarkerId("source"),
-                    position: sourceLocation,
-                    icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-                  ),
-                  Marker(
-                    markerId: const MarkerId("destination"),
-                    position: destination,
-                  ),
+                  if (santoDomingoLocation != null)
+                    Marker(
+                      markerId: const MarkerId("santoDomingo"),
+                      position: santoDomingoLocation!,
+                      icon: BitmapDescriptor.defaultMarkerWithHue(
+                          BitmapDescriptor.hueGreen),
+                    ),
+                  if (santiagoLocation != null)
+                    Marker(
+                      markerId: const MarkerId("santiago"),
+                      position: santiagoLocation!,
+                    ),
                 },
                 onMapCreated: (mapController) {
                   _controller.complete(mapController);
-                  mapController.moveCamera(CameraUpdate.newLatLng(sourceLocation));
                 },
               ),
             ),
@@ -120,6 +133,45 @@ class _TrackingPageState extends State<TrackingPage> {
                     style: const TextStyle(fontSize: 16),
                   ),
                 ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              onPressed: onLocationButtonPressed,
+              child: Text("Obtener Ubicación"),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue, // Color de fondo del botón
+                onPrimary: Colors.white, // Color del texto del botón
+                padding: EdgeInsets.symmetric(
+                    horizontal: 5, vertical: 5), // Ajusta el tamaño del botón
+              ),
+            ),
+            ElevatedButton(
+              onPressed: onSendLocationButtonPressed,
+              child: Text("Enviar Ubicación"),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.green, // Color de fondo del botón
+                onPrimary: Colors.white, // Color del texto del botón
+                padding: EdgeInsets.symmetric(
+                    horizontal: 0.5,
+                    vertical: 0.5), // Ajusta el tamaño del botón
+              ),
+            ),
+            ElevatedButton(
+              onPressed: onReceiveLocationButtonPressed,
+              child: Text("Recibir Ubicación"),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.orange, // Color de fondo del botón
+                onPrimary: Colors.white, // Color del texto del botón
+                padding: EdgeInsets.symmetric(
+                    horizontal: 5, vertical: 5), // Ajusta el tamaño del botón
               ),
             ),
           ],
