@@ -3,7 +3,9 @@ import 'package:come_along_with_me/Pages/home_page.dart';
 import 'package:come_along_with_me/Pages/login_page.dart';
 import 'package:come_along_with_me/Routes/routes.dart';
 import 'package:come_along_with_me/cubit/auth/cubit/auth_cubit.dart';
+import 'package:come_along_with_me/cubit/chat/chat_cubit.dart';
 import 'package:come_along_with_me/cubit/credential/cubit/credential_cubit.dart';
+import 'package:come_along_with_me/cubit/group/group_cubit.dart';
 import 'package:come_along_with_me/cubit/user/cubit/user_cubit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -29,8 +31,16 @@ class Myapp extends StatelessWidget {
       providers: [
         BlocProvider<AuthCubit>(
             create: (_) => di.sl<AuthCubit>()..appStarted()),
-        BlocProvider<CredentialCubit>(create: (_) => di.sl<CredentialCubit>()),
-        BlocProvider<UserCubit>(create: (_) => di.sl<UserCubit>()..getUsers()),
+        BlocProvider<CredentialCubit>(
+          create: (_) => di.sl<CredentialCubit>()),
+        BlocProvider<UserCubit>(
+          create: (_) => di.sl<UserCubit>()..getUsers()),
+        BlocProvider<GroupCubit>(
+          create: (_) => di.sl<GroupCubit>()..getGroups(),
+        ),
+        BlocProvider<ChatCubit>(
+          create: (_) => di.sl<ChatCubit>(),
+        ),
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,

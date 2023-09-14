@@ -5,6 +5,7 @@ import 'package:come_along_with_me/Pages/login_page.dart';
 import 'package:come_along_with_me/Pages/register_page.dart';
 import 'package:come_along_with_me/Pages/single_chat_page.dart';
 import 'package:come_along_with_me/const.dart';
+import 'package:come_along_with_me/domain/entities/single_chat_entity.dart';
 import 'package:flutter/material.dart';
 
 class Routes {
@@ -30,12 +31,12 @@ class Routes {
 
       case PageConst.createnewGroupPage:
         {
-          return materialBuilder(widget: CreatenewGroupPage());
+          return materialBuilder(widget: CreatenewGroupPage(uid: '',));
         }
 
       case PageConst.singleChatPage:
         {
-          return materialBuilder(widget: SingleChatPage());
+          return materialBuilder(widget:  SingleChatPage(singleChatEntity: settings.arguments as SingleChatEntity,));
         }
       case PageConst.ChatRoom:
         {

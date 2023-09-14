@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
   ];
 
   List<Widget> get pages =>
-      [GroupPage(), UsersPage(users: [],), ProfilePage(currentUser: UserModel(),)];
+      [GroupPage(uid: '',), UsersPage(users: [],), ProfilePage(currentUser: UserModel(),)];
   @override
   void dispose() {
     _searchController.dispose();
@@ -158,7 +158,7 @@ class _HomePageState extends State<HomePage> {
   Widget _switchPage({required List<UserEntity> users, required UserEntity currentUser}){
     switch(_toolBarPageIndex){
       case 0:
-        return GroupPage();
+        return GroupPage(uid: '',);
       case 1:
         return UsersPage(users: users);
       case 2:

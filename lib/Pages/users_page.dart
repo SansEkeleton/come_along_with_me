@@ -40,7 +40,7 @@ class UsersPage extends StatelessWidget {
               itemCount: users.length,
               itemBuilder: ((context, index) {
                 return SingleItemUserWidget(
-                  profileUser: users[index],
+                  user: users[index],
                   onTap: () {
                     if (_auth.currentUser != null && userMap != null) {
                       String roomId = chatRoomId(

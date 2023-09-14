@@ -153,7 +153,6 @@ class _ChatRoomState extends State<ChatRoom> {
   }
 
   Widget _buildMessageWidget(Map<String, dynamic> map) {
-    final Size size = MediaQuery.of(context).size;
     final isCurrentUser = map['sendby'] == _auth.currentUser!.displayName;
 
     return Align(

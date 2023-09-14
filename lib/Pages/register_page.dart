@@ -10,6 +10,7 @@ import 'package:come_along_with_me/widgets/TextFieldContainer.dart';
 import 'package:come_along_with_me/widgets/TextFieldPasswordContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -168,22 +169,73 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _submitSignUp() {
-    if (usernamecontroller.text.isEmpty ||
-        emailcontroller.text.isEmpty ||
-        passwordcontroller.text.isEmpty) {
-      return;
-    }
-
-    BlocProvider.of<CredentialCubit>(context).submitSignUp(
-      user: UserEntity(
-        name: usernamecontroller.text,
-        email: emailcontroller.text,
-        password: passwordcontroller.text,
-        isOnline: false,
-        phone: "",
-        profileUrl: "",
-        status: "",
-      ),
-    );
+  if (usernamecontroller.text.isEmpty ||
+      emailcontroller.text.isEmpty ||
+      passwordcontroller.text.isEmpty ||
+      passwordaAgainController.text.isEmpty) {
+    return;
   }
+
+  String password = passwordcontroller.text;
+  String passwordAgain = passwordaAgainController.text;
+
+  // Comprueba si la contraseña cumple con los requisitos
+  if (!_isPasswordValid(password)) {
+    // Muestra un mensaje de error si la contraseña no cumple con los requisitos
+    return;
+  }
+
+  // Comprueba si las contraseñas coinciden
+  if (password != passwordAgain) {
+    _showToast("Las contraseñas no coinciden");
+    return;
+  }
+
+  BlocProvider.of<CredentialCubit>(context).submitSignUp(
+    user: UserEntity(
+      name: usernamecontroller.text,
+      email: emailcontroller.text,
+      password: password,
+      isOnline: false,
+      phone: "",
+      profileUrl: "",
+      status: "",
+    ),
+  );
+}
+
+bool _isPasswordValid(String password) {
+  // Verifica que la contraseña tenga al menos 8 caracteres
+  if (password.length < 8) {
+    _showToast("La contraseña debe tener al menos 8 caracteres");
+    return false;
+  }
+
+  // Verifica que la contraseña comience con una letra mayúscula
+  if (!RegExp(r'^[A-Z]').hasMatch(password)) {
+    _showToast("Debe introducir una mayúscula en la contraseña");
+    return false;
+  }
+
+  // Verifica que la contraseña contenga al menos un carácter especial
+  if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password)) {
+    _showToast("Debe introducir un carácter especial en la contraseña");
+    return false;
+  }
+
+  return true;
+}
+
+
+void _showToast(String message) {
+  Fluttertoast.showToast(
+    msg: message,
+    toastLength: Toast.LENGTH_SHORT,
+    gravity: ToastGravity.BOTTOM,
+    timeInSecForIosWeb: 1,
+    backgroundColor: Colors.red,
+    textColor: Colors.white,
+    fontSize: 16.0,
+  );
+}
 }
