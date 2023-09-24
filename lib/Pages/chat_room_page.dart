@@ -129,7 +129,7 @@ class _ChatRoomState extends State<ChatRoom> {
                                 ),
                               );
                             },
-                            icon: Icon(Icons.location_searching),
+                            icon: Icon(Icons.location_on_outlined),
                           ),
                           hintText: "Send Message",
                           border: OutlineInputBorder(

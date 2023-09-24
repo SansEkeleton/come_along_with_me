@@ -8,6 +8,7 @@ import 'package:come_along_with_me/widgets/HeaderWidget.dart';
 import 'package:come_along_with_me/widgets/RowTextWidget.dart';
 import 'package:come_along_with_me/widgets/TextFieldContainer.dart';
 import 'package:come_along_with_me/widgets/TextFieldPasswordContainer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -168,12 +169,32 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void _submitSignUp() {
+  Future<void> _submitSignUp() async {
   if (usernamecontroller.text.isEmpty ||
       emailcontroller.text.isEmpty ||
       passwordcontroller.text.isEmpty ||
       passwordaAgainController.text.isEmpty) {
     return;
+  }
+
+  try {
+    UserCredential authResult = await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(
+            email: emailcontroller.text, password: passwordcontroller.text);
+
+    User? user = authResult.user;
+
+    // Envía un correo electrónico de verificación
+    await user?.sendEmailVerification();
+
+    // Muestra un mensaje de éxito
+    _showToast("Registrado exitosamente. Verifica tu correo electrónico.");
+
+    // Continúa con la autenticación si es necesario
+    // ...
+  } catch (error) {
+    // Maneja errores de registro aquí
+    print(error);
   }
 
   String password = passwordcontroller.text;

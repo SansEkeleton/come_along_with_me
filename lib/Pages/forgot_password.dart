@@ -3,7 +3,9 @@ import 'package:come_along_with_me/widgets/ContainerButtonWidget.dart';
 import 'package:come_along_with_me/widgets/HeaderWidget.dart';
 import 'package:come_along_with_me/widgets/RowTextWidget.dart';
 import 'package:come_along_with_me/widgets/TextFieldContainer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class forgotPasswordPage extends StatefulWidget {
   const forgotPasswordPage({super.key});
@@ -56,11 +58,23 @@ class _forgotPasswordPageState extends State<forgotPasswordPage> {
                 height: 20,
               ),
               ContainerButtonWidget(
-                title: "Enviar Email",
-                onTap: () {
-                  print("xd");
-                },
-              ),
+  title: "Enviar Email",
+  onTap: () {
+    final email = _emailcontroller.text.trim();
+
+    FirebaseAuth.instance.sendPasswordResetEmail(email: email)
+      .then((_) {
+        // Éxito: Correo electrónico de recuperación enviado con éxito.
+        // Puedes mostrar un mensaje de éxito o redirigir a otra pantalla.
+        _showToast("Correo electrónico de recuperación enviado con éxito.");
+      })
+      .catchError((error) {
+        // Error: No se pudo enviar el correo electrónico de recuperación.
+        // Puedes mostrar un mensaje de error al usuario.
+        _showToast("Error al enviar el correo electrónico de recuperación: $error");
+      });
+  },
+),
               SizedBox(
                 height: 20,
               ),
@@ -78,4 +92,16 @@ class _forgotPasswordPageState extends State<forgotPasswordPage> {
       ),
     );
   }
+
+  void _showToast(String message) {
+  Fluttertoast.showToast(
+    msg: message,
+    toastLength: Toast.LENGTH_SHORT,
+    gravity: ToastGravity.BOTTOM,
+    timeInSecForIosWeb: 1,
+    backgroundColor: Colors.red,
+    textColor: Colors.white,
+    fontSize: 16.0,
+  );
+}
 }

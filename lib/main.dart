@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:come_along_with_me/Pages/home_page.dart';
 import 'package:come_along_with_me/Pages/login_page.dart';
 import 'package:come_along_with_me/Routes/routes.dart';
@@ -17,7 +16,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await di.init();
-  final FirebaseFirestore fireStore = FirebaseFirestore.instance;
 
   runApp(const Myapp());
 }

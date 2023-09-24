@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bubble/bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:come_along_with_me/Pages/Gps_tracking_page.dart';
 import 'package:come_along_with_me/cubit/chat/chat_cubit.dart';
 import 'package:come_along_with_me/cubit/group/group_cubit.dart';
 import 'package:come_along_with_me/domain/entities/group_entity.dart';
@@ -119,10 +120,20 @@ class _SingleChatPageState extends State<SingleChatPage> {
                   ),
                   Row(
                     children: [
-                      Icon(
-                        Icons.link,
-                        color: Colors.grey[500],
-                      ),
+                      IconButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TrackingPage(
+                                    onSendLocation:
+                                        (Map<String, dynamic> message) {},
+                                  ),
+                                ),
+                              );
+                            },
+                            icon: Icon(Icons.location_on_outlined),
+                          ),
                       SizedBox(
                         width: 10,
                       ),

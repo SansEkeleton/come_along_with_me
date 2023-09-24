@@ -36,16 +36,14 @@ class _CreateGroupPageState extends State<CreatenewGroupPage> {
   GlobalKey<ScaffoldState> _scaffoldState = GlobalKey<ScaffoldState>();
 
 
-  int _selectGender = -1;
-  int _selectExamType = -1;
-  bool _isShowPassword=true;
 
   File? _image;
   String? _profileUrl;
 
   Future getImage() async {
     try {
-      final pickedFile = await ImagePicker.platform.getImage(source: ImageSource.gallery);
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
       setState(() {
         if (pickedFile != null) {

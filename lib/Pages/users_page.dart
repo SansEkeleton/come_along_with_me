@@ -5,6 +5,7 @@ import 'package:come_along_with_me/widgets/single_item_user_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class UsersPage extends StatelessWidget {
   final List<UserEntity> users;
   final FirebaseAuth _auth = FirebaseAuth.instance;
