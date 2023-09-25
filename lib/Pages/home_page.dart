@@ -12,17 +12,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatefulWidget {
   final String uid;
-  const HomePage({super.key, required this.uid});
+  const HomePage({Key? key, required this.uid}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-
- 
-
-  
   TextEditingController _searchController = TextEditingController();
   PageController _pageViewController = PageController(initialPage: 0);
   bool _isSearch = false;
@@ -32,8 +28,17 @@ class _HomePageState extends State<HomePage> {
     "Log out",
   ];
 
-  List<Widget> get pages =>
-      [GroupPage(uid: '',), UsersPage(users: [],), ProfilePage(currentUser: UserModel(),)];
+  List<Widget> get pages => [
+        GroupPage(
+          uid: '',
+        ),
+        UsersPage(
+          users: [],
+        ),
+        ProfilePage(
+          currentUser: UserModel(),
+        )
+      ];
   @override
   void dispose() {
     _searchController.dispose();
@@ -43,28 +48,33 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildSearchWidget() {
     return Container(
-        margin: EdgeInsets.only(top: 50),
-        height: 40,
-        decoration: BoxDecoration(color: Colors.white, boxShadow: [
+      margin: EdgeInsets.only(top: 50),
+      height: 40,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(.3),
-              blurRadius: 2,
-              spreadRadius: 1,
-              offset: Offset(0, 0.50)),
-        ]),
-        child: TextFieldContainerWidget(
-          hintText: "Search",
-          prefixIcon: Icons.arrow_back,
-          keyboardType: TextInputType.text,
-          controller: _searchController,
-          borderRadius: 0.0,
-          color: Colors.white,
-          iconClickEvent: () {
-            setState(() {
-              _isSearch = !_isSearch;
-            });
-          },
-        ));
+            color: Colors.black.withOpacity(.3),
+            blurRadius: 2,
+            spreadRadius: 1,
+            offset: Offset(0, 0.50),
+          ),
+        ],
+      ),
+      child: TextFieldContainerWidget(
+        hintText: "Search",
+        prefixIcon: Icons.arrow_back,
+        keyboardType: TextInputType.text,
+        controller: _searchController,
+        borderRadius: 0.0,
+        color: Colors.white,
+        iconClickEvent: () {
+          setState(() {
+            _isSearch = !_isSearch;
+          });
+        },
+      ),
+    );
   }
 
   Widget _emptyContainer() {
@@ -77,65 +87,59 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          elevation: 0.0,
-          backgroundColor: _isSearch == true
-              ? Colors.transparent
-              : Color.fromRGBO(82, 131, 202, 1),
-          title: _isSearch == true ? _emptyContainer() : Text("CAWM"),
-          flexibleSpace:
-              _isSearch == true ? _buildSearchWidget() : _emptyContainer(),
-          actions: _isSearch == true
-              ? []
-              : [
-                  InkWell(
-                      onTap: () {
-                        setState(
-                          () {
-                            _isSearch = !_isSearch;
-                          },
-                        );
+      appBar: AppBar(
+        elevation: 0.0,
+        backgroundColor: _isSearch == true
+            ? Colors.transparent
+            : Color.fromRGBO(82, 131, 202, 1),
+        title: _isSearch == true ? _emptyContainer() : Text("CAWM"),
+        flexibleSpace:
+            _isSearch == true ? _buildSearchWidget() : _emptyContainer(),
+        actions: _isSearch == true
+            ? []
+            : [
+                InkWell(
+                  onTap: () {
+                    setState(
+                      () {
+                        _isSearch = !_isSearch;
                       },
-                      child: const Icon(Icons.search)),
-                  PopupMenuButton(
-                      onSelected: (value) {
-                        if (value == "Log out") {
-                          BlocProvider.of<AuthCubit>(context).loggedOut();
-                        }
-                      },
-                      itemBuilder: (_) => _popuMenuList.map((menuItem) {
-                            return PopupMenuItem(
-                              child: Text("$menuItem"),
-                              value: menuItem,
-                            );
-                          }).toList()),
-                ],
-        ),
-        body: BlocBuilder<UserCubit, UserState>(
-          builder: (context, userState) {
-            
-            
+                    );
+                  },
+                  child: const Icon(Icons.search),
+                ),
+                PopupMenuButton(
+                  onSelected: (value) {
+                    if (value == "Log out") {
+                      BlocProvider.of<AuthCubit>(context).loggedOut();
+                    }
+                  },
+                  itemBuilder: (_) => _popuMenuList.map(
+                    (menuItem) {
+                      return PopupMenuItem(
+                        child: Text("$menuItem"),
+                        value: menuItem,
+                      );
+                    },
+                  ).toList(),
+                ),
+              ],
+      ),
+      body: BlocBuilder<UserCubit, UserState>(
+        builder: (context, userState) {
+          if (userState is UserLoaded) {
+            final currentUser = userState.users.firstWhere(
+              (element) => element.uid == widget.uid,
+              orElse: () => UserModel(),
+            );
+            final users = userState.users
+                .where((element) => element.uid != widget.uid)
+                .toList();
 
-            if (userState is UserLoaded){
-
-            final currentUser = userState.users.firstWhere((element) => element.uid == widget.uid, orElse: () => UserModel(),);
-            final users = userState.users.where((element) => element.uid != widget.uid).toList();
-
-              return Column(children: [
-              _isSearch == true
-                  ? _emptyContainer()
-                  : CustomToolBarWidget(
-                      pageIndex: _toolBarPageIndex,
-                      toolBarIndexController: (index) {
-                        print("current page $index");
-                        setState(() {
-                          _toolBarPageIndex = index;
-                        });
-                        _pageViewController.jumpToPage(index);
-                      },
-                    ),
-              Expanded(
-                child: PageView.builder(
+            return Column(
+              children: [
+                Expanded(
+                  child: PageView.builder(
                     controller: _pageViewController,
                     onPageChanged: (index) {
                       setState(() {
@@ -144,25 +148,60 @@ class _HomePageState extends State<HomePage> {
                     },
                     itemCount: pages.length,
                     itemBuilder: (context, index) {
-                      return _switchPage(users:users, currentUser: currentUser);
-                    }),
-              ),
-            ]);
-            }
-            return const Center(
-              child: CircularProgressIndicator(),
+                      return _switchPage(
+                          users: users, currentUser: currentUser);
+                    },
+                  ),
+                ),
+              ],
             );
-          },
-        ));
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _toolBarPageIndex,
+        onTap: (index) {
+          setState(() {
+            _toolBarPageIndex = index;
+            _pageViewController.jumpToPage(index);
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.group),
+            label: 'Groups',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Profile',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people),
+            label: 'Users',
+          ),
+        ],
+      ),
+    );
   }
-  Widget _switchPage({required List<UserEntity> users, required UserEntity currentUser}){
-    switch(_toolBarPageIndex){
+
+  Widget _switchPage({
+    required List<UserEntity> users,
+    required UserEntity currentUser,
+  }) {
+    switch (_toolBarPageIndex) {
       case 0:
-        return GroupPage(uid: '',);
+        return GroupPage(
+          uid: '',
+        );
       case 1:
-        return UsersPage(users: users);
+        return ProfilePage(
+          currentUser: currentUser as UserModel,
+        );
       case 2:
-        return ProfilePage(currentUser: currentUser,);
+        return UsersPage(users: users);
       default:
         return Container();
     }
