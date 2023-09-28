@@ -38,11 +38,19 @@ dependencies:
   audioplayers: ^5.1.0
   assets_audio_player: ^3.1.1
   android_media: ^0.0.1
+  url_launcher: ^6.1.14 
+flutter_launcher_icons: 
+    android: 'launcher_icon'
+    ios: true
+    image_path: 'assets/icon/launcher_logo.png'
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+
+
 
 flutter:
   uses-material-design: true

@@ -8,7 +8,7 @@
 
     <application
         android:label="come_along_with_me"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
 
         <!-- Add the following meta-data tag for Android embedding v2 -->
         <meta-data
