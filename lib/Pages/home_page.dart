@@ -1,6 +1,7 @@
 import 'package:come_along_with_me/Pages/group_page.dart';
 import 'package:come_along_with_me/Pages/profile_page.dart';
 import 'package:come_along_with_me/Pages/users_page.dart';
+import 'package:come_along_with_me/Pages/configurationPage.dart';
 import 'package:come_along_with_me/cubit/auth/cubit/auth_cubit.dart';
 import 'package:come_along_with_me/cubit/user/cubit/user_cubit.dart';
 import 'package:come_along_with_me/data/user_model.dart';
@@ -37,8 +38,10 @@ class _HomePageState extends State<HomePage> {
         ),
         ProfilePage(
           currentUser: UserModel(),
-        )
+        ),
+        ConfigurationPage(),
       ];
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -169,18 +172,42 @@ class _HomePageState extends State<HomePage> {
             _pageViewController.jumpToPage(index);
           });
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.group),
+            icon: Column(
+              children: [
+                Icon(Icons.group, color: Colors.blue),
+                Text('Group', style: TextStyle(color: Colors.blue)),
+              ],
+            ),
             label: 'Groups',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
+            icon: Column(
+              children: [
+                Icon(Icons.account_circle, color: Colors.blue),
+                Text('Profile', style: TextStyle(color: Colors.blue)),
+              ],
+            ),
             label: 'Profile',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people),
-            label: 'Users',
+            icon: Column(
+              children: [
+                Icon(Icons.person, color: Colors.blue),
+                Text('User', style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+            label: 'User',
+          ),
+          BottomNavigationBarItem(
+            icon: Column(
+              children: [
+                Icon(Icons.settings, color: Colors.blue),
+                Text('Configuration', style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+            label: 'Configuration',
           ),
         ],
       ),
@@ -202,6 +229,8 @@ class _HomePageState extends State<HomePage> {
         );
       case 2:
         return UsersPage(users: users);
+      case 3:
+        return ConfigurationPage();
       default:
         return Container();
     }

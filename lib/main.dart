@@ -14,7 +14,7 @@ import 'injection_container.dart' as di;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(); // Firebase initialization
   await di.init();
 
   runApp(const Myapp());
@@ -28,11 +28,14 @@ class Myapp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthCubit>(
-            create: (_) => di.sl<AuthCubit>()..appStarted()),
+          create: (_) => di.sl<AuthCubit>()..appStarted(),
+        ),
         BlocProvider<CredentialCubit>(
-          create: (_) => di.sl<CredentialCubit>()),
+          create: (_) => di.sl<CredentialCubit>(),
+        ),
         BlocProvider<UserCubit>(
-          create: (_) => di.sl<UserCubit>()..getUsers()),
+          create: (_) => di.sl<UserCubit>()..getUsers(),
+        ),
         BlocProvider<GroupCubit>(
           create: (_) => di.sl<GroupCubit>()..getGroups(),
         ),
@@ -41,24 +44,25 @@ class Myapp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'CAWM',
-          theme: ThemeData(),
-          onGenerateRoute: Routes.route,
-          initialRoute: "/",
-          routes: {
-            "/": (context) {
-              return BlocBuilder<AuthCubit, AuthState>(
-                builder: (context, authState) {
-                  if (authState is AuthenticatedState) {
-                    return HomePage(uid: authState.uid);
-                  } else {
-                    return  LoginPage(uid: "");
-                  }
-                },
-              );
-            },
-          }),
+        debugShowCheckedModeBanner: false,
+        title: 'CAWM',
+        theme: ThemeData(),
+        onGenerateRoute: Routes.route,
+        initialRoute: "/",
+        routes: {
+          "/": (context) {
+            return BlocBuilder<AuthCubit, AuthState>(
+              builder: (context, authState) {
+                if (authState is AuthenticatedState) {
+                  return HomePage(uid: authState.uid);
+                } else {
+                  return LoginPage(uid: "");
+                }
+              },
+            );
+          },
+        },
+      ),
     );
   }
 }
