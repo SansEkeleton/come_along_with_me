@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class TrackingPage extends StatefulWidget {
   const TrackingPage({
@@ -156,16 +157,14 @@ class _TrackingPageState extends State<TrackingPage> {
             polylines: {
               if (showPolyline)
                 Polyline(
-                  polylineId: PolylineId("route"), // ID de polilínea
-                  points:
-                      directionCoordinates, // Use the static direction line coordinates
+                  polylineId: PolylineId("route"),
+                  points: directionCoordinates,
                   color: Colors.blue,
                   width: 6,
                 ),
               Polyline(
-                polylineId: PolylineId("movingRoute"), // ID de polilínea
-                points:
-                    movingCoordinates, // Use the moving polyline coordinates
+                polylineId: PolylineId("movingRoute"),
+                points: movingCoordinates,
                 color: Colors.green,
                 width: 6,
               ),
@@ -191,19 +190,46 @@ class _TrackingPageState extends State<TrackingPage> {
           ),
           // Notification button (Panic button)
           Positioned(
-            left: 16.0,
-            bottom: 16.0,
+            left: 6.0,
+            bottom: 30.0,
             child: ElevatedButton(
               onPressed: onPanicButtonPressed,
               child: Icon(
-                Icons.notifications, // Notification icon
-                size: 24.0, // Icon size
+                Icons.notifications,
+                size: 20.0,
               ),
               style: ElevatedButton.styleFrom(
-                primary: Colors.red, // Button background color
-                onPrimary: Colors.white, // Icon color
-                shape: CircleBorder(), // Circular button shape
-                padding: EdgeInsets.all(16.0), // Button padding
+                primary: Colors.red,
+                onPrimary: Colors.white,
+                shape: CircleBorder(),
+                padding: EdgeInsets.all(16.0),
+              ),
+            ),
+          ),
+          // Live Location button
+          Positioned(
+            left: 6.0,
+            bottom: 85.0,
+            child: ElevatedButton(
+              onPressed: () async {
+                // Solicita permiso para acceder a la ubicación en vivo
+                final status = await Permission.location.request();
+
+                if (status == PermissionStatus.granted) {
+                  // El usuario concedió permiso, aquí puedes implementar la lógica para acceder a la ubicación en vivo.
+                } else {
+                  // El usuario no concedió permiso, puedes mostrar un mensaje de error o realizar alguna otra acción.
+                }
+              },
+              child: Icon(
+                Icons.location_on,
+                size: 20.0,
+              ),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+                onPrimary: Colors.white,
+                shape: CircleBorder(),
+                padding: EdgeInsets.all(10.0),
               ),
             ),
           ),
@@ -218,36 +244,36 @@ class _TrackingPageState extends State<TrackingPage> {
               onPressed: onLocationButtonPressed,
               child: Text("Obtener Ubicación"),
               style: ElevatedButton.styleFrom(
-                primary: Colors.blue, // Color de fondo del botón
-                onPrimary: Colors.white, // Color del texto del botón
+                primary: Colors.blue,
+                onPrimary: Colors.white,
                 padding: EdgeInsets.symmetric(
                   horizontal: 5,
                   vertical: 5,
-                ), // Ajusta el tamaño del botón
+                ),
               ),
             ),
             ElevatedButton(
               onPressed: onSendLocationButtonPressed,
               child: Text("Enviar Ubicación"),
               style: ElevatedButton.styleFrom(
-                primary: Colors.green, // Color de fondo del botón
-                onPrimary: Colors.white, // Color del texto del botón
+                primary: Colors.green,
+                onPrimary: Colors.white,
                 padding: EdgeInsets.symmetric(
                   horizontal: 0.5,
                   vertical: 0.5,
-                ), // Ajusta el tamaño del botón
+                ),
               ),
             ),
             ElevatedButton(
               onPressed: onReceiveLocationButtonPressed,
               child: Text("Recibir Ubicación"),
               style: ElevatedButton.styleFrom(
-                primary: Colors.orange, // Color de fondo del botón
-                onPrimary: Colors.white, // Color del texto del botón
+                primary: Colors.orange,
+                onPrimary: Colors.white,
                 padding: EdgeInsets.symmetric(
                   horizontal: 5,
                   vertical: 5,
-                ), // Ajusta el tamaño del botón
+                ),
               ),
             ),
           ],
