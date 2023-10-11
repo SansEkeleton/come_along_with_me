@@ -1,15 +1,15 @@
+import 'package:come_along_with_me/Pages/configurationPage.dart';
 import 'package:come_along_with_me/Pages/group_page.dart';
 import 'package:come_along_with_me/Pages/profile_page.dart';
 import 'package:come_along_with_me/Pages/users_page.dart';
-import 'package:come_along_with_me/Pages/configurationPage.dart';
 import 'package:come_along_with_me/cubit/auth/cubit/auth_cubit.dart';
 import 'package:come_along_with_me/cubit/user/cubit/user_cubit.dart';
 import 'package:come_along_with_me/data/user_model.dart';
 import 'package:come_along_with_me/domain/entities/user_entity.dart';
 import 'package:come_along_with_me/widgets/TextFieldContainer.dart';
-import 'package:come_along_with_me/widgets/custom_tool_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   final String uid;
@@ -27,6 +27,7 @@ class _HomePageState extends State<HomePage> {
 
   List<String> _popuMenuList = [
     "Log out",
+    'Q/A'
   ];
 
   List<Widget> get pages => [
@@ -115,6 +116,9 @@ class _HomePageState extends State<HomePage> {
                   onSelected: (value) {
                     if (value == "Log out") {
                       BlocProvider.of<AuthCubit>(context).loggedOut();
+                    }
+                    else if (value == 'Q/A'){
+                    launch("https://littleblckii234.wixsite.com/come-along-with-me");
                     }
                   },
                   itemBuilder: (_) => _popuMenuList.map(
