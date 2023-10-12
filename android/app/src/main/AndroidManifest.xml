@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:label="come_along_with_me"
+        android:label="CAWM"
         android:icon="@mipmap/ic_launcher">
 
         <!-- Add the following meta-data tag for Android embedding v2 -->
