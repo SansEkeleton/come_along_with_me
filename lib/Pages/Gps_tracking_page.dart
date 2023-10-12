@@ -90,6 +90,15 @@ class _TrackingPageState extends State<TrackingPage> {
       setState(() {
         showPolyline = true;
       });
+    } else {
+      // Display an in-app notification when the location is not enabled.
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              "No tienes acceso a esta función, comunícate con un usuario"),
+          duration: Duration(seconds: 4),
+        ),
+      );
     }
   }
 
@@ -172,7 +181,8 @@ class _TrackingPageState extends State<TrackingPage> {
         children: [
           GoogleMap(
             initialCameraPosition: CameraPosition(
-              target: santoDomingoLocation ?? LatLng(0, 0),
+              target: LatLng(
+                  18.7357, -70.1627), // Centered on the Dominican Republic
               zoom: 6.0,
             ),
             polylines: {
