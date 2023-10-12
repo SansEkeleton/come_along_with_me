@@ -26,6 +26,26 @@ dependencies:
   percent_indicator: ^4.2.3
   google_sign_in: ^6.1.4
   firebase_core: ^2.14.0
+  mailer: ^6.0.1
+  flutter_polyline_points: ^1.0.0
+  google_maps_flutter: ^2.5.0
+  location: ^5.0.0
+  permission_handler: ^10.4.3
+  google_maps_webservice: ^0.0.20-nullsafety.5
+  shared_preferences: ^2.2.1
+  flutter_cache_manager: ^3.3.1
+  flutter_sound: ^9.2.13
+  audioplayers: ^5.1.0
+  assets_audio_player: ^3.1.1
+  android_media: ^0.0.1
+  firebase_messaging: ^14.6.8
+  geolocator: ^10.1.0
+  url_launcher: ^6.1.14
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "C:/assets/ic_launcher.png"
+  min_sdk_android: 21
 
 dev_dependencies:
   flutter_test:
@@ -37,3 +57,5 @@ flutter:
 
   assets:
     - assets/.
+    - assets/onlymp3.to - Danger Alarm Sound Effect-rUkzZTGE6jI-192k-1695664567.mp3
+

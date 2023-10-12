@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "319205215204",
+    "firebase_url": "https://cawm-81f1b-default-rtdb.firebaseio.com",
     "project_id": "cawm-81f1b",
     "storage_bucket": "cawm-81f1b.appspot.com"
   },
@@ -14,7 +15,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "319205215204-kdqirur152gqa0pjvek4ivto6m9eba0q.apps.googleusercontent.com",
+          "client_id": "319205215204-poorbpmhvrmvpe3j6g1v0p2l2o41lh5s.apps.googleusercontent.com",
           "client_type": 3
         }
       ],

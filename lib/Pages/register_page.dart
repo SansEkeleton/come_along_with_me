@@ -8,8 +8,10 @@ import 'package:come_along_with_me/widgets/HeaderWidget.dart';
 import 'package:come_along_with_me/widgets/RowTextWidget.dart';
 import 'package:come_along_with_me/widgets/TextFieldContainer.dart';
 import 'package:come_along_with_me/widgets/TextFieldPasswordContainer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -38,28 +40,30 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       body: BlocConsumer<CredentialCubit, CredentialState>(
         listener: (context, credentialState) {
-          if (credentialState is CredentialSucess){
+          if (credentialState is CredentialSucess) {
             BlocProvider.of<AuthCubit>(context).loggedIn();
           }
 
-          if (credentialState is CredentialFailure){
+          if (credentialState is CredentialFailure) {
             print("Invalid credentials");
           }
         },
         builder: (context, credentialState) {
-
-          if (credentialState is CredentialLoading){
+          if (credentialState is CredentialLoading) {
             return CircularProgressIndicator();
           }
 
-          if (CredentialState is CredentialSucess){
-            return BlocBuilder<AuthCubit,AuthState>(builder: (context, authState ) {
-              if(authState is AuthenticatedState){
-                return HomePage(uid: authState.uid,);
-              }else{ return _bodyWidget();}
-            }
-            
-            );
+          if (CredentialState is CredentialSucess) {
+            return BlocBuilder<AuthCubit, AuthState>(
+                builder: (context, authState) {
+              if (authState is AuthenticatedState) {
+                return HomePage(
+                  uid: authState.uid,
+                );
+              } else {
+                return _bodyWidget();
+              }
+            });
           }
           return _bodyWidget();
         },
@@ -82,7 +86,8 @@ class _RegisterPageState extends State<RegisterPage> {
           SizedBox(height: 12),
           Text(
             "Subir foto de perfil",
-            style: TextStyle(fontSize: 16, color: Color.fromRGBO(233, 78, 54, 1)),
+            style:
+                TextStyle(fontSize: 16, color: Color.fromRGBO(233, 78, 54, 1)),
           ),
         ],
       ),
@@ -164,22 +169,94 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void _submitSignUp() {
-    if (usernamecontroller.text.isEmpty || emailcontroller.text.isEmpty || passwordcontroller.text.isEmpty) {
-      return;
-    }
-
-    BlocProvider.of<CredentialCubit>(context).submitSignUp(
-      user: UserEntity(
-        name: usernamecontroller.text,
-        email: emailcontroller.text,
-        password: passwordcontroller.text,
-        isOnline: false,
-        phone: "",
-        profileUrl: "",
-        status: "",
-    
-      ),
-    );
+  Future<void> _submitSignUp() async {
+  if (usernamecontroller.text.isEmpty ||
+      emailcontroller.text.isEmpty ||
+      passwordcontroller.text.isEmpty ||
+      passwordaAgainController.text.isEmpty) {
+    return;
   }
+
+  try {
+    UserCredential authResult = await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(
+            email: emailcontroller.text, password: passwordcontroller.text);
+
+    User? user = authResult.user;
+
+    // Envía un correo electrónico de verificación
+    await user?.sendEmailVerification();
+
+    // Muestra un mensaje de éxito
+    _showToast("Registrado exitosamente. Verifica tu correo electrónico.");
+
+    // Continúa con la autenticación si es necesario
+    // ...
+  } catch (error) {
+    // Maneja errores de registro aquí
+    print(error);
+  }
+
+  String password = passwordcontroller.text;
+  String passwordAgain = passwordaAgainController.text;
+
+  // Comprueba si la contraseña cumple con los requisitos
+  if (!_isPasswordValid(password)) {
+    // Muestra un mensaje de error si la contraseña no cumple con los requisitos
+    return;
+  }
+
+  // Comprueba si las contraseñas coinciden
+  if (password != passwordAgain) {
+    _showToast("Las contraseñas no coinciden");
+    return;
+  }
+
+  BlocProvider.of<CredentialCubit>(context).submitSignUp(
+    user: UserEntity(
+      name: usernamecontroller.text,
+      email: emailcontroller.text,
+      password: password,
+      isOnline: false,
+      phone: "",
+      profileUrl: "",
+      status: "",
+    ),
+  );
+}
+
+bool _isPasswordValid(String password) {
+  // Verifica que la contraseña tenga al menos 8 caracteres
+  if (password.length < 8) {
+    _showToast("La contraseña debe tener al menos 8 caracteres");
+    return false;
+  }
+
+  // Verifica que la contraseña comience con una letra mayúscula
+  if (!RegExp(r'^[A-Z]').hasMatch(password)) {
+    _showToast("Debe introducir una mayúscula en la contraseña");
+    return false;
+  }
+
+  // Verifica que la contraseña contenga al menos un carácter especial
+  if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password)) {
+    _showToast("Debe introducir un carácter especial en la contraseña");
+    return false;
+  }
+
+  return true;
+}
+
+
+void _showToast(String message) {
+  Fluttertoast.showToast(
+    msg: message,
+    toastLength: Toast.LENGTH_SHORT,
+    gravity: ToastGravity.BOTTOM,
+    timeInSecForIosWeb: 1,
+    backgroundColor: Colors.red,
+    textColor: Colors.white,
+    fontSize: 16.0,
+  );
+}
 }
