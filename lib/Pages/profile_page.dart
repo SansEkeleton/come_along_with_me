@@ -14,6 +14,7 @@ import '../domain/entities/user_entity.dart';
 
 class ProfilePage extends StatefulWidget {
   final UserEntity currentUser;
+
   const ProfilePage({super.key, required this.currentUser});
 
   @override
@@ -21,7 +22,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-
   TextEditingController _nameController = TextEditingController();
   TextEditingController _statusController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
@@ -33,15 +33,17 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    _nameController.value = TextEditingValue(text: widget.currentUser.name!);
-    _statusController.value = TextEditingValue(text: widget.currentUser.status!);
-     SharedPreferences.getInstance().then((prefs) {
-    if (mounted) { // Verifica si el widget todavía está montado
-      setState(() {
-        _profileUrl = prefs.getString('profileImageUrl') ?? null;
-      });
-    }
-  });
+    _nameController.value =
+        TextEditingValue(text: widget.currentUser.name ?? "");
+    _statusController.value =
+        TextEditingValue(text: widget.currentUser.status ?? "");
+    SharedPreferences.getInstance().then((prefs) {
+      if (mounted) {
+        setState(() {
+          _profileUrl = prefs.getString('profileImageUrl') ?? null;
+        });
+      }
+    });
   }
 
   @override
@@ -51,7 +53,6 @@ class _ProfilePageState extends State<ProfilePage> {
     _statusController.dispose();
   }
 
-
   Future getImage() async {
     try {
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -59,10 +60,11 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         if (pickedFile != null) {
           _image = File(pickedFile.path);
-          StorageProviderRemoteDataSource.uploadFile(file: _image!).then((value) {
+          StorageProviderRemoteDataSource.uploadFile(file: _image!)
+              .then((value) {
             print("profileUrl");
             setState(() {
-              _profileUrl=value;
+              _profileUrl = value;
             });
           });
         } else {
@@ -76,97 +78,102 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget build(BuildContext context) {
     return BlocBuilder<UserCubit, UserState>(
-    builder: (context, userState) {
-      if (userState is UserLoaded) {
-        // Aquí puedes acceder a userState.users para obtener los datos del usuario
-        final currentUser = userState.users.firstWhere(
-          (user) => user.uid == widget.currentUser.uid,
-          orElse: () => UserModel(), // Cambia esto por el modelo de usuario adecuado
-        );
-        _nameController.text = currentUser.name ?? "";
-        _emailController.text = currentUser.email ?? "";
-        _statusController.text = currentUser.status ?? "";
+      builder: (context, userState) {
+        if (userState is UserLoaded) {
+          // Access user data with null checks
+          final currentUser = userState.users.firstWhere(
+            (user) => user.uid == widget.currentUser.uid,
+            orElse: () =>
+                UserModel(), // Change this to the appropriate user model
+          );
+          _nameController.text = currentUser.name ?? "";
+          _emailController.text = currentUser.email ?? "";
+          _statusController.text = currentUser.status ?? "";
 
-        return SingleChildScrollView(
-          child: Container(
-      padding: EdgeInsets.all(50),
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: (){getImage();},
+          return SingleChildScrollView(
             child: Container(
-              height: 62,
-              width: 62,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(62),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(62),
-                child: _profileUrl != null
-                    ? Image.network(_profileUrl!, fit: BoxFit.cover)
-                    : Icon(Icons.person, color: Colors.white),
+              padding: EdgeInsets.all(50),
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      getImage();
+                    },
+                    child: Container(
+                      height: 62,
+                      width: 62,
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(62),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(62),
+                        child: _profileUrl != null
+                            ? Image.network(_profileUrl!, fit: BoxFit.cover)
+                            : Icon(Icons.person, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 15),
+                  Text(
+                    "Remove profile photo",
+                    style: TextStyle(
+                      color: Color.fromRGBO(227, 78, 54, 1.000),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 40),
+                  TextFieldContainerWidget(
+                    keyboardType: TextInputType.name,
+                    hintText: "name",
+                    controller: _nameController,
+                    prefixIcon: Icons.person,
+                  ),
+                  SizedBox(height: 10),
+                  TextFieldContainerWidget(
+                    hintText: "email",
+                    prefixIcon: Icons.email,
+                    controller: _emailController,
+                  ),
+                  SizedBox(height: 10),
+                  TextFieldContainerWidget(
+                    hintText: "Status",
+                    controller: _statusController,
+                    prefixIcon: Icons.interests,
+                  ),
+                  SizedBox(height: 10),
+                  Divider(thickness: 1.50),
+                  SizedBox(height: 10),
+                  ContainerButtonWidget(
+                    title: "Update Profile",
+                    onTap: () {
+                      _updateUserProfile();
+                    },
+                  )
+                ],
               ),
             ),
-          ),
-          SizedBox(height: 15),
-          Text(
-            "Remove profile photo",
-            style: TextStyle(
-              color: Color.fromRGBO(227, 78, 54, 1.000),
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(height: 40),
-          TextFieldContainerWidget(
-            keyboardType: TextInputType.name,
-            hintText: "name",
-            controller: _nameController,
-            prefixIcon: Icons.person,
-          ),
-          SizedBox(height: 10),
-          TextFieldContainerWidget(
-            hintText: "email",
-            prefixIcon: Icons.email,
-            controller: _emailController,
-          ),
-          SizedBox(height: 10),
-          TextFieldContainerWidget(
-            hintText: "Status",
-            controller: _statusController,
-            prefixIcon: Icons.interests,
-          ),
-          SizedBox(height: 10),
-          Divider(thickness: 1.50),
-          SizedBox(height: 10),
-          ContainerButtonWidget(
-            title: "Update Profile",
-            onTap: () {
-              _updateUserProfile();
-            })
-      ]),
-    ),
-        );
-      } else {
-        return Center(child: CircularProgressIndicator());
-      }
-    },
-  );
-}
+          );
+        } else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
+    );
+  }
 
   void _updateUserProfile() async {
-
     BlocProvider.of<UserCubit>(context).updateUsers(
-        user: UserEntity(
-          uid: widget.currentUser.uid,
-            name: _nameController.text,
-            email: _emailController.text,
-            status: _statusController.text,
-            profileUrl: _profileUrl,));
+      user: UserEntity(
+        uid: widget.currentUser.uid,
+        name: _nameController.text,
+        email: _emailController.text,
+        status: _statusController.text,
+        profileUrl: _profileUrl,
+      ),
+    );
 
-  final prefs = await SharedPreferences.getInstance();
-  prefs.setString("profileImageUrl", _profileUrl!);
-
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString("profileImageUrl", _profileUrl!);
   }
 }

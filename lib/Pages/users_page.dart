@@ -25,9 +25,13 @@ class UsersPage extends StatelessWidget {
   }
 
   Future<void> getUserData() async {
-    DocumentSnapshot snapshot =
-        await _firestore.collection("users").doc(_auth.currentUser!.uid).get();
-    userMap = snapshot.data() as Map<String, dynamic>?;
+    if (_auth.currentUser != null) {
+      DocumentSnapshot snapshot = await _firestore
+          .collection("users")
+          .doc(_auth.currentUser!.uid)
+          .get();
+      userMap = snapshot.data() as Map<String, dynamic>?;
+    }
   }
 
   @override
@@ -43,9 +47,11 @@ class UsersPage extends StatelessWidget {
                 return SingleItemUserWidget(
                   user: users[index],
                   onTap: () {
-                    if (_auth.currentUser != null && userMap != null) {
+                    if (_auth.currentUser != null &&
+                        userMap != null &&
+                        users[index].name != null) {
                       String roomId = chatRoomId(
-                        _auth.currentUser!.displayName??"",
+                        _auth.currentUser!.displayName ?? "",
                         users[index].name!,
                       );
 
