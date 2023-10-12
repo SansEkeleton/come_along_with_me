@@ -33,30 +33,44 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   }
 
   @override
-Future<void> getCreateCurrentUser(UserEntity user) async {
-  final userCollection = fireStore.collection("users");
-  final uid = await getCurrentUserId();
+  Future<void> getCreateCurrentUser(UserEntity user) async {
+    final userCollection = fireStore.collection("users");
 
-  final userDoc = await userCollection.doc(uid).get();
-  final newUser = UserModel(
-    uid: uid,
-    name: user.name,
-    email: user.email,
-    profileUrl: user.profileUrl,
-    status: user.status,
-    phone: user.phone,
-    password: user.password,
-    isOnline: user.isOnline,
-  ).toDocument();
+    try {
+      final uid = await getCurrentUserId();
 
-  if (!userDoc.exists) {
-    await userCollection.doc(uid).set(newUser);
+      final userDoc = await userCollection.doc(uid).get();
+      final newUser = UserModel(
+        uid: uid,
+        name: user.name,
+        email: user.email,
+        profileUrl: user.profileUrl,
+        status: user.status,
+        phone: user.phone,
+        password: user.password,
+        isOnline: user.isOnline,
+      ).toDocument();
+
+      if (!userDoc.exists) {
+        await userCollection.doc(uid).set(newUser);
+      }
+    } catch (e) {
+      print(e.toString());
+    }
   }
-}
 
   @override
-  Future<String> getCurrentUserId() async => auth.currentUser!.uid;
- 
+  Future<String> getCurrentUserId() async {
+    final currentUser = auth.currentUser;
+    if (currentUser != null) {
+      return currentUser.uid;
+    } else {
+      // Handle the case when the current user is null.
+      // You can return a default value or throw a custom exception.
+      throw Exception("Current user is null");
+    }
+  }
+
   @override
   Future<void> getUpdateUser(UserEntity user) async {
  
@@ -77,17 +91,44 @@ Future<void> getCreateCurrentUser(UserEntity user) async {
   }
 
   @override
-  Future<void> googleAuth() {
-    // TODO: implement googleAuth
-    throw UnimplementedError();
+  Stream<List<UserEntity>> getAllUsers() {
+    final userCollection = fireStore.collection("users");
+    return userCollection.snapshots().map((querySnapshot) =>
+        querySnapshot.docs.map((e) => UserModel.fromSnapshot(e)).toList());
+
   }
 
   @override
-    Future<bool> isSignIn() async => auth.currentUser != null;
+  Future<void> googleAuth() async {
+    final GoogleSignInAccount? account = await googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth =
+        await account!.authentication;
+
+final authCredrential =  GoogleAuthProvider.credential(idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
+
+    final userInformation = (await auth.signInWithCredential(authCredrential)).user;
+    getCreateCurrentUser(UserEntity(
+      uid: userInformation!.uid,
+      name: userInformation.displayName,
+      email: userInformation.email,
+      profileUrl: userInformation.photoURL,
+      status: "Hey there, I am using Come Along With Me",
+      phone: userInformation.phoneNumber,
+      isOnline: true,
+    ));
+    
+  }
+
 
 
   @override
- Future<void> signIn(UserEntity user) async {
+  Future<bool> isSignIn() async {
+    final user = auth.currentUser;
+    return user != null;
+  }
+
+  @override
+  Future<void> signIn(UserEntity user) async {
     final email = user.email;
     final password = user.password;
 
@@ -137,8 +178,9 @@ Future<void> getCreateCurrentUser(UserEntity user) async {
   }
 
   @override
-   Future<void> signOut() async => await auth.signOut();
-
+  Future<void> signOut() async {
+    await auth.signOut();
+  }
 
   @override
   Future<void> signUp(UserEntity user) async {
